@@ -1,0 +1,6 @@
+# Built binaries
+task
+task-mac
+task-mac-intel
+task-linux
+task.exe
