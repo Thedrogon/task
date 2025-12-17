@@ -4,9 +4,12 @@ A simple, fast, cross-platform **command-line task manager** written in Go.
 
 This tool works as a **terminal command** (`task`) and does **NOT require Go** to be installed for normal users.
 
-## Use CLI for task mangement
-![SCR-20251217-qvaz](https://github.com/user-attachments/assets/68ae944d-a0fa-4853-94bf-364b54513c37)
-![SCR-20251217-qvfa](https://github.com/user-attachments/assets/bf36b908-4d7f-4c25-8100-ccfd7b17c629)
+## Use CLI for task management
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/68ae944d-a0fa-4853-94bf-364b54513c37" width="45%" />
+  <img src="https://github.com/user-attachments/assets/bf36b908-4d7f-4c25-8100-ccfd7b17c629" width="45%" />
+</p>
+
 
 ---
 
@@ -292,4 +295,5 @@ MIT License
 
 **Anik Chand**
 Built with ❤️ using Go.
+
 
