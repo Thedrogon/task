@@ -1,6 +1,6 @@
 # Task CLI 📝
 
-A simple, fast, cross-platform **command-line task manager** written in Go.
+A simple, fast, cross-platform **command-line todo app** written in Go.
 
 This tool works as a **terminal command** (`task`) and does **NOT require Go** to be installed for normal users.
 
@@ -295,5 +295,6 @@ MIT License
 
 **Anik Chand**
 Built with ❤️ using Go.
+
 
 
