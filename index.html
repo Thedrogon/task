@@ -1,0 +1,1057 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>task — Terminal Todo Manager</title>
+    <style>
+      :root {
+        --bg: #0a0e14;
+        --text: #e6edf3;
+        --text-dim: #9198a1;
+        --accent: #26d07c;
+        --accent-bright: #39ff9d;
+        --accent-glow: rgba(57, 255, 157, 0.3);
+        --border: #30363d;
+        --terminal-bg: #151b23;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Consolas", monospace;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Header */
+      header {
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.1rem;
+        color: var(--accent-bright);
+        font-weight: 700;
+        text-shadow: 0 0 20px var(--accent-glow);
+        cursor: pointer;
+      }
+
+      .logo::before {
+        content: ">_ ";
+        color: var(--accent);
+      }
+
+      .logo-version {
+        color: var(--text-dim);
+        font-size: 0.85rem;
+        margin-left: 8px;
+      }
+
+      nav {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
+
+      nav a {
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+      }
+
+      nav a:hover {
+        color: var(--accent-bright);
+        text-shadow: 0 0 10px var(--accent-glow);
+      }
+
+      /* Hero */
+      .hero {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 120px 40px 80px;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 5.5rem;
+        font-weight: 800;
+        color: var(--accent-bright);
+        letter-spacing: -4px;
+        margin-bottom: 24px;
+      }
+
+      .tagline {
+        font-size: 1.5rem;
+        color: var(--text);
+        margin-bottom: 16px;
+        font-weight: 400;
+      }
+
+      .features-inline {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        margin: 32px 0 48px;
+        flex-wrap: wrap;
+      }
+
+      .features-inline span {
+        color: var(--text);
+        font-size: 0.95rem;
+        font-weight: 500;
+      }
+
+      .features-inline span::before {
+        content: "> ";
+        color: var(--accent-bright);
+        font-weight: 700;
+      }
+
+      /* Install section */
+      .install-section {
+        background: var(--terminal-bg);
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        padding: 24px 32px;
+        max-width: 800px;
+        margin: 0 auto 48px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        justify-content: space-between;
+        box-shadow: 0 0 30px rgba(57, 255, 157, 0.1);
+      }
+
+      .install-label {
+        color: var(--accent-bright);
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .install-command {
+        flex: 1;
+        color: var(--accent-bright);
+        font-size: 0.95rem;
+        font-weight: 600;
+        background: var(--bg);
+        padding: 12px 16px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+      }
+
+      .more-options {
+        color: var(--accent-bright);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+      }
+
+      .more-options:hover {
+        text-shadow: 0 0 10px var(--accent-glow);
+      }
+
+      .more-options::after {
+        content: "→";
+      }
+
+      /* Terminal Preview */
+      .terminal-preview {
+        max-width: 1200px;
+        margin: 0 auto 40px;
+        padding: 0 40px;
+      }
+
+      .terminal-window {
+        background: var(--terminal-bg);
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.7),
+          0 0 40px rgba(57, 255, 157, 0.15);
+      }
+
+      .terminal-header {
+        background: #0a0e14;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .terminal-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .terminal-dot:nth-child(1) {
+        background: #ff5f56;
+      }
+      .terminal-dot:nth-child(2) {
+        background: #ffbd2e;
+      }
+      .terminal-dot:nth-child(3) {
+        background: #27c93f;
+      }
+
+      .terminal-body {
+        padding: 24px;
+        font-size: 1rem;
+        line-height: 1.8;
+        min-height: 300px;
+      }
+
+      .terminal-line {
+        display: block;
+        margin-bottom: 4px;
+        opacity: 0;
+        animation: fadeIn 0.3s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      .terminal-line:nth-child(1) {
+        animation-delay: 0.5s;
+      }
+      .terminal-line:nth-child(2) {
+        animation-delay: 1s;
+      }
+      .terminal-line:nth-child(3) {
+        animation-delay: 1.5s;
+      }
+      .terminal-line:nth-child(4) {
+        animation-delay: 2s;
+      }
+      .terminal-line:nth-child(5) {
+        animation-delay: 2.5s;
+      }
+      .terminal-line:nth-child(6) {
+        animation-delay: 3s;
+      }
+      .terminal-line:nth-child(7) {
+        animation-delay: 3.5s;
+      }
+      .terminal-line:nth-child(8) {
+        animation-delay: 4s;
+      }
+      .terminal-line:nth-child(9) {
+        animation-delay: 4.5s;
+      }
+      .terminal-line:nth-child(10) {
+        animation-delay: 5s;
+      }
+      .terminal-line:nth-child(11) {
+        animation-delay: 5.5s;
+      }
+
+      .prompt {
+        color: var(--accent-bright);
+        font-weight: 700;
+      }
+
+      .command {
+        color: var(--accent-bright);
+        font-weight: 600;
+      }
+
+      .task-item {
+        padding-left: 16px;
+      }
+
+      .task-done {
+        color: var(--accent-bright);
+        font-weight: 700;
+      }
+
+      .task-pending {
+        color: #f5a623;
+        font-weight: 700;
+      }
+
+      .task-text {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .task-time {
+        color: var(--text-dim);
+      }
+
+      /* Interactive Terminal */
+      .interactive-terminal {
+        max-width: 1200px;
+        margin: 0 auto 80px;
+        padding: 0 40px;
+      }
+
+      .interactive-title {
+        text-align: center;
+        margin-bottom: 24px;
+        color: var(--accent-bright);
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-shadow: 0 0 20px var(--accent-glow);
+      }
+
+      .interactive-body {
+        padding: 24px;
+        font-size: 1rem;
+        line-height: 1.8;
+        min-height: 400px;
+      }
+
+      #output {
+        margin-bottom: 16px;
+      }
+
+      .input-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #commandInput {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--accent-bright);
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        outline: none;
+        padding: 4px 0;
+      }
+
+      #commandInput::placeholder {
+        color: var(--text-dim);
+      }
+
+      .cursor-blink {
+        display: inline-block;
+        width: 8px;
+        height: 18px;
+        background: var(--accent-bright);
+        animation: blink 1s infinite;
+        margin-left: 2px;
+      }
+
+      @keyframes blink {
+        0%,
+        49% {
+          opacity: 1;
+        }
+        50%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      .help-text {
+        margin-top: 16px;
+        color: var(--text-dim);
+        font-size: 0.85rem;
+        text-align: center;
+      }
+
+      .help-text code {
+        color: var(--accent);
+        background: var(--bg);
+        padding: 2px 6px;
+        border-radius: 3px;
+      }
+
+      /* Sections */
+      section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 80px 40px;
+        border-top: 1px solid var(--border);
+      }
+
+      h2 {
+        font-size: 2.2rem;
+        color: var(--accent-bright);
+        margin-bottom: 48px;
+        font-weight: 700;
+        text-shadow: 0 0 20px var(--accent-glow);
+      }
+
+      .installation-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin-bottom: 32px;
+      }
+
+      .install-card {
+        background: var(--terminal-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 24px;
+        transition: all 0.3s ease;
+      }
+
+      .install-card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 20px rgba(57, 255, 157, 0.1);
+      }
+
+      .install-card h3 {
+        font-size: 1.1rem;
+        color: var(--accent-bright);
+        margin-bottom: 16px;
+        font-weight: 700;
+      }
+
+      .install-card pre {
+        background: var(--bg);
+        padding: 16px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        border: 1px solid var(--border);
+      }
+
+      .install-card code {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* Features */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+      }
+
+      .feature {
+        padding: 24px 0;
+      }
+
+      .feature h3 {
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+
+      .feature h3::before {
+        content: "> ";
+        color: var(--accent-bright);
+        font-weight: 700;
+      }
+
+      .feature p {
+        color: var(--text-dim);
+        line-height: 1.7;
+      }
+
+      /* Usage */
+      .usage-block {
+        background: var(--terminal-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+
+      .usage-block pre {
+        overflow-x: auto;
+        font-size: 0.9rem;
+        line-height: 1.8;
+      }
+
+      .usage-block code {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .cmd {
+        color: var(--accent-bright);
+        font-weight: 700;
+      }
+
+      .comment {
+        color: var(--text-dim);
+      }
+
+      /* Privacy note */
+      .privacy-note {
+        background: var(--terminal-bg);
+        border-left: 3px solid var(--accent);
+        padding: 24px;
+        border-radius: 4px;
+      }
+
+      .privacy-note strong {
+        color: var(--accent-bright);
+        font-weight: 700;
+      }
+
+      .privacy-note code {
+        color: var(--accent);
+        background: var(--bg);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-weight: 600;
+      }
+
+      /* Footer */
+      footer {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 40px 60px;
+        text-align: center;
+        color: var(--text-dim);
+        border-top: 1px solid var(--border);
+      }
+
+      footer a {
+        color: var(--accent-bright);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      footer a:hover {
+        text-shadow: 0 0 10px var(--accent-glow);
+      }
+
+      /* Buttons */
+      .github-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: transparent;
+        border: 1px solid var(--accent);
+        color: var(--accent-bright);
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+      }
+
+      .github-btn:hover {
+        background: var(--accent);
+        color: var(--bg);
+        box-shadow: 0 0 20px var(--accent-glow);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 3.5rem;
+        }
+
+        .tagline {
+          font-size: 1.2rem;
+        }
+
+        .features-inline {
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .install-section {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .header-content {
+          padding: 0 20px;
+        }
+
+        .hero,
+        .terminal-preview,
+        .interactive-terminal,
+        section,
+        footer {
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+
+        nav {
+          gap: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <a
+          href="#"
+          onclick="
+            location.reload();
+            return false;
+          "
+          style="text-decoration: none"
+        >
+          <div class="logo">task<span class="logo-version">v1.0.0</span></div>
+        </a>
+        <nav>
+          <a href="#features">Features</a>
+          <a href="#install">Install</a>
+          <a href="https://github.com/anikchand461/task" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>task</h1>
+        <p class="tagline">A terminal todo manager you can just use.</p>
+
+        <div class="features-inline">
+          <span>Fast & lightweight</span>
+          <span>Plain text storage</span>
+          <span>Cross-platform</span>
+          <span>Zero configuration</span>
+        </div>
+
+        <!-- <div class="install-section"> -->
+        <!--   <span class="install-label">Install:</span> -->
+        <!--   <code class="install-command">curl -L get.task.sh | sh</code> -->
+        <!--   <a href="#install" class="more-options">More options</a> -->
+        <!-- </div> -->
+
+        <a
+          href="https://github.com/anikchand461/task/releases"
+          class="github-btn"
+          target="_blank"
+        >
+          <span>Download Releases</span>
+        </a>
+      </section>
+
+      <div class="terminal-preview">
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="terminal-dot"></div>
+            <div class="terminal-dot"></div>
+            <div class="terminal-dot"></div>
+          </div>
+          <div class="terminal-body">
+            <span class="terminal-line"
+              ><span class="prompt">❯</span>
+              <span class="command">task list</span></span
+            >
+            <span class="terminal-line task-item"
+              ><span class="task-done">1. ✅</span>
+              <span class="task-text">leetcode weekly 484</span>
+              <span class="task-time">- 8am</span></span
+            >
+            <span class="terminal-line task-item"
+              ><span class="task-pending">2. ⭕️</span>
+              <span class="task-text">kaggle competition</span></span
+            >
+            <span class="terminal-line task-item"
+              ><span class="task-done">3. ✅</span>
+              <span class="task-text">dp - av</span></span
+            >
+            <span class="terminal-line task-item"
+              ><span class="task-pending">4. ⭕️</span>
+              <span class="task-text">codeforces</span></span
+            >
+            <span class="terminal-line task-item"
+              ><span class="task-pending">5. ⭕️</span>
+              <span class="task-text"
+                >upsolve the questions of ABC contest 440</span
+              ></span
+            >
+            <span class="terminal-line"></span>
+            <span class="terminal-line"
+              ><span class="prompt">❯</span>
+              <span class="command">task add "Review pull requests"</span></span
+            >
+            <span class="terminal-line"
+              ><span class="task-done">✓</span>
+              <span class="task-text">Task added successfully</span></span
+            >
+            <span class="terminal-line"></span>
+            <span class="terminal-line"
+              ><span class="prompt">❯</span>
+              <span class="command">task done 2</span></span
+            >
+            <span class="terminal-line"
+              ><span class="task-done">✓</span>
+              <span class="task-text">Task #2 marked as complete</span></span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="interactive-terminal">
+        <h2 class="interactive-title">Try it out</h2>
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="terminal-dot"></div>
+            <div class="terminal-dot"></div>
+            <div class="terminal-dot"></div>
+          </div>
+          <div class="interactive-body">
+            <div id="output"></div>
+            <div class="input-line">
+              <span class="prompt">❯</span>
+              <input
+                type="text"
+                id="commandInput"
+                placeholder="Type a command (e.g., task add 'Buy milk')"
+                autofocus
+              />
+            </div>
+            <p class="help-text">
+              Available commands: <code>task add "description"</code>,
+              <code>task list</code>, <code>task done [number]</code>,
+              <code>task delete [number]</code>, <code>task clear</code>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <section id="features">
+        <h2>Features</h2>
+        <div class="features-grid">
+          <div class="feature">
+            <h3>Lightning Fast</h3>
+            <p>
+              Written in Go for instant startup and minimal memory footprint.
+              Manages thousands of tasks without breaking a sweat.
+            </p>
+          </div>
+          <div class="feature">
+            <h3>Local & Private</h3>
+            <p>
+              All data stored in plain text at ~/.task/tasks.txt. No cloud sync,
+              no telemetry, no tracking. Your tasks stay on your machine.
+            </p>
+          </div>
+          <div class="feature">
+            <h3>Simple Commands</h3>
+            <p>
+              Intuitive CLI with commands that make sense: add, list, done,
+              delete. No configuration files or setup required.
+            </p>
+          </div>
+          <div class="feature">
+            <h3>Cross-Platform</h3>
+            <p>
+              Native binaries for macOS (Apple Silicon & Intel), Linux, and
+              Windows. Works the same everywhere.
+            </p>
+          </div>
+          <div class="feature">
+            <h3>Portable Format</h3>
+            <p>
+              Tasks stored in human-readable text format. Easy to backup, sync
+              with git, or edit manually if needed.
+            </p>
+          </div>
+          <div class="feature">
+            <h3>Terminal Native</h3>
+            <p>
+              Designed for your workflow. Beautiful emoji indicators,
+              color-coded output, and seamless shell integration.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="install">
+        <h2>Installation</h2>
+
+        <div class="installation-grid">
+          <div class="install-card">
+            <h3>macOS (Apple Silicon)</h3>
+            <pre><code>curl -L https://github.com/anikchand461/task/releases/latest/download/task-darwin-arm64 -o task
+chmod +x task
+sudo mv task /usr/local/bin/</code></pre>
+          </div>
+
+          <div class="install-card">
+            <h3>macOS (Intel)</h3>
+            <pre><code>curl -L https://github.com/anikchand461/task/releases/latest/download/task-darwin-amd64 -o task
+chmod +x task
+sudo mv task /usr/local/bin/</code></pre>
+          </div>
+
+          <div class="install-card">
+            <h3>Linux</h3>
+            <pre><code>curl -L https://github.com/anikchand461/task/releases/latest/download/task-linux-amd64 -o task
+chmod +x task
+sudo mv task /usr/local/bin/</code></pre>
+          </div>
+
+          <div class="install-card">
+            <h3>Windows</h3>
+            <pre><code>Invoke-WebRequest -Uri "https://github.com/anikchand461/task/releases/latest/download/task-windows-amd64.exe" -OutFile "task.exe"
+# Move to PATH directory</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="usage">
+        <h2>Usage</h2>
+
+        <div class="usage-block">
+          <pre><code><span class="prompt">❯</span> <span class="cmd">task add "Buy groceries"</span>
+<span class="comment"># Add a new task</span>
+
+<span class="prompt">❯</span> <span class="cmd">task list</span>
+<span class="comment"># View all tasks</span>
+
+<span class="prompt">❯</span> <span class="cmd">task done 1</span>
+<span class="comment"># Mark task #1 as complete</span>
+
+<span class="prompt">❯</span> <span class="cmd">task delete 2</span>
+<span class="comment"># Delete task #2</span>
+
+<span class="prompt">❯</span> <span class="cmd">task clear</span>
+<span class="comment"># Remove all completed tasks</span>
+
+<span class="prompt">❯</span> <span class="cmd">task --help</span>
+<span class="comment"># Show all available commands</span></code></pre>
+        </div>
+      </section>
+
+      <section id="privacy">
+        <h2>Privacy & Data</h2>
+        <div class="privacy-note">
+          <p>
+            <strong>Your data stays local.</strong> All tasks are stored in
+            plain text at <code>~/.task/tasks.txt</code>. No telemetry, no
+            analytics, no external servers. You have full control over your task
+            file—back it up, sync it with git, or version control it however you
+            prefer.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Built by <strong>Anik Chand</strong></p>
+      <p style="margin-top: 8px">
+        <a href="https://github.com/anikchand461/task" target="_blank"
+          >View Source on GitHub</a
+        >
+      </p>
+    </footer>
+
+    <script>
+      // Interactive terminal simulation
+      const tasks = [];
+      let taskIdCounter = 1;
+
+      const output = document.getElementById("output");
+      const commandInput = document.getElementById("commandInput");
+
+      function addOutput(text, className = "") {
+        const line = document.createElement("div");
+        line.className = `terminal-line ${className}`;
+        line.innerHTML = text;
+        line.style.opacity = "0";
+        output.appendChild(line);
+
+        // Animate the line appearing
+        setTimeout(() => {
+          line.style.transition = "opacity 0.3s ease-out";
+          line.style.opacity = "1";
+        }, 10);
+
+        output.scrollTop = output.scrollHeight;
+      }
+
+      function typeCommand(command) {
+        addOutput(
+          `<span class="prompt">❯</span> <span class="command">${command}</span>`,
+        );
+      }
+
+      function listTasks() {
+        if (tasks.length === 0) {
+          addOutput(
+            '<span class="task-text">No tasks found. Add one with: task add "your task"</span>',
+          );
+          return;
+        }
+
+        tasks.forEach((task, index) => {
+          const status = task.done ? "✅" : "⭕️";
+          const statusClass = task.done ? "task-done" : "task-pending";
+          addOutput(
+            `<span class="task-item"><span class="${statusClass}">${index + 1}. ${status}</span> <span class="task-text">${task.text}</span></span>`,
+          );
+        });
+      }
+
+      function addTask(text) {
+        const cleanText = text
+          .replace(/^task add ["']|["']$/g, "")
+          .replace(/^add ["']|["']$/g, "")
+          .trim();
+        if (cleanText) {
+          tasks.push({ id: taskIdCounter++, text: cleanText, done: false });
+          addOutput(
+            '<span class="task-done">✓</span> <span class="task-text">Task added successfully</span>',
+          );
+        } else {
+          addOutput(
+            '<span class="task-pending">✗</span> <span class="task-text">Please provide a task description</span>',
+          );
+        }
+      }
+
+      function markDone(taskNum) {
+        const index = parseInt(taskNum) - 1;
+        if (index >= 0 && index < tasks.length) {
+          tasks[index].done = true;
+          addOutput(
+            `<span class="task-done">✓</span> <span class="task-text">Task #${taskNum} marked as complete</span>`,
+          );
+        } else {
+          addOutput(
+            '<span class="task-pending">✗</span> <span class="task-text">Task not found</span>',
+          );
+        }
+      }
+
+      function deleteTask(taskNum) {
+        const index = parseInt(taskNum) - 1;
+        if (index >= 0 && index < tasks.length) {
+          tasks.splice(index, 1);
+          addOutput(
+            `<span class="task-done">✓</span> <span class="task-text">Task #${taskNum} deleted</span>`,
+          );
+        } else {
+          addOutput(
+            '<span class="task-pending">✗</span> <span class="task-text">Task not found</span>',
+          );
+        }
+      }
+
+      function clearTasks() {
+        const beforeCount = tasks.length;
+        tasks.splice(0, tasks.length, ...tasks.filter((t) => !t.done));
+        const cleared = beforeCount - tasks.length;
+        addOutput(
+          `<span class="task-done">✓</span> <span class="task-text">Cleared ${cleared} completed task(s)</span>`,
+        );
+      }
+
+      function processCommand(cmd) {
+        const trimmed = cmd.trim().toLowerCase();
+
+        typeCommand(cmd);
+
+        if (trimmed === "task list" || trimmed === "list") {
+          listTasks();
+        } else if (
+          trimmed.startsWith("task add") ||
+          trimmed.startsWith("add")
+        ) {
+          addTask(cmd);
+        } else if (
+          trimmed.startsWith("task done") ||
+          trimmed.startsWith("done")
+        ) {
+          const num = trimmed.match(/\d+/);
+          if (num) markDone(num[0]);
+          else
+            addOutput(
+              '<span class="task-pending">✗</span> <span class="task-text">Please specify task number</span>',
+            );
+        } else if (
+          trimmed.startsWith("task delete") ||
+          trimmed.startsWith("delete")
+        ) {
+          const num = trimmed.match(/\d+/);
+          if (num) deleteTask(num[0]);
+          else
+            addOutput(
+              '<span class="task-pending">✗</span> <span class="task-text">Please specify task number</span>',
+            );
+        } else if (trimmed === "task clear" || trimmed === "clear") {
+          clearTasks();
+        } else if (trimmed === "help" || trimmed === "task help") {
+          addOutput('<span class="task-text">Available commands:</span>');
+          addOutput(
+            '<span class="task-item"><span class="task-done">•</span> <span class="task-text">task add "description" - Add a new task</span></span>',
+          );
+          addOutput(
+            '<span class="task-item"><span class="task-done">•</span> <span class="task-text">task list - Show all tasks</span></span>',
+          );
+          addOutput(
+            '<span class="task-item"><span class="task-done">•</span> <span class="task-text">task done [number] - Mark task as complete</span></span>',
+          );
+          addOutput(
+            '<span class="task-item"><span class="task-done">•</span> <span class="task-text">task delete [number] - Delete a task</span></span>',
+          );
+          addOutput(
+            '<span class="task-item"><span class="task-done">•</span> <span class="task-text">task clear - Remove completed tasks</span></span>',
+          );
+        } else {
+          addOutput(
+            '<span class="task-pending">✗</span> <span class="task-text">Unknown command. Type "help" for available commands.</span>',
+          );
+        }
+
+        addOutput("");
+      }
+
+      commandInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const cmd = commandInput.value;
+          if (cmd.trim()) {
+            processCommand(cmd);
+            commandInput.value = "";
+          }
+        }
+      });
+
+      // Add some demo tasks on load
+      setTimeout(() => {
+        tasks.push(
+          {
+            id: taskIdCounter++,
+            text: "Try adding your own task!",
+            done: false,
+          },
+          { id: taskIdCounter++, text: "Check this demo task", done: true },
+        );
+      }, 100);
+    </script>
+  </body>
+</html>
