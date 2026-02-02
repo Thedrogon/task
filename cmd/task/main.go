@@ -10,7 +10,7 @@ import (
 )
 
 func printHelp() {
-	fmt.Println(`
+	fmt.Print(`
 Task CLI 📝
 
 Usage:
@@ -35,7 +35,6 @@ Examples:
   task clear
 `)
 }
-
 
 func main() {
 	if len(os.Args) < 2 ||
@@ -66,7 +65,6 @@ func main() {
 		if err != nil {
 			fmt.Println("Error:", err)
 		}
-
 
 	case "clear":
 		err := task.Clear()
@@ -108,7 +106,7 @@ func main() {
 		
 	case "done":
 		if len(os.Args) < 3 {
-			fmt.Println("Usage: task done <id | all>")
+			fmt.Println("Usage: task done <id | all> [<id> ...]")
 			return
 		}
 
@@ -122,17 +120,17 @@ func main() {
 			return
 		}
 
-		err := task.Done(os.Args[2])
+		// Join all IDs with commas to support: task done 1 3 or task done "1,3"
+		idStr := strings.Join(os.Args[2:], ",")
+		err := task.Done(idStr)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
 		}
-		fmt.Println("Task marked as done")
-
+		fmt.Println("Tasks marked as done")
 
 	default:
 		fmt.Println("Unknown command:", os.Args[1])
 		printHelp()
 	}
 }
-

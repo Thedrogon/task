@@ -2,60 +2,118 @@ package task
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
 func Done(idStr string) error {
-	// convert id string to int
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return err
-	}
-
-	// get absolute path to ~/.task/tasks.txt
 	path, err := dataFilePath()
 	if err != nil {
 		return err
 	}
 
-	// open file
+	// Parse comma-separated IDs
+	idParts := strings.Split(idStr, ",")
+	idsToMark := make(map[int]bool)
+
+	for _, part := range idParts {
+		trimmed := strings.TrimSpace(part)
+		id, err := strconv.Atoi(trimmed)
+		if err != nil {
+			return fmt.Errorf("invalid task id: %s", trimmed)
+		}
+		idsToMark[id] = true
+	}
+
+	// Read all tasks
 	f, err := os.Open(path)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	// read all lines
-	var lines []string
 	scanner := bufio.NewScanner(f)
+	var tasks []string
+	i := 1
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		line := scanner.Text()
+		if idsToMark[i] {
+			// Mark this task as done
+			parts := strings.Split(line, "|")
+			if len(parts) >= 2 {
+				parts[1] = "done"
+				line = strings.Join(parts, "|")
+			}
+		}
+		tasks = append(tasks, line)
+		i++
 	}
 
 	if err := scanner.Err(); err != nil {
 		return err
 	}
 
-	// validate id
-	if id < 1 || id > len(lines) {
-		return nil
+	// Write back all tasks
+	f, err = os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	for _, task := range tasks {
+		_, err = f.WriteString(task + "\n")
+		if err != nil {
+			return err
+		}
 	}
 
-	// mark task as done
-	parts := strings.Split(lines[id-1], "|")
-	if len(parts) >= 2 {
-		parts[1] = "done"
-		lines[id-1] = strings.Join(parts, "|")
+	return nil
+}
+
+func DoneAll() error {
+	path, err := dataFilePath()
+	if err != nil {
+		return err
 	}
 
-	// write back to file
-	return os.WriteFile(
-		path,
-		[]byte(strings.Join(lines, "\n")+"\n"),
-		0644,
-	)
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	var tasks []string
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.Split(line, "|")
+		if len(parts) >= 1 {
+			parts[1] = "done"
+			line = strings.Join(parts, "|")
+		}
+		tasks = append(tasks, line)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	f, err = os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	for _, task := range tasks {
+		_, err = f.WriteString(task + "\n")
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func DoneAll() error {
