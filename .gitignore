@@ -4,3 +4,6 @@ task-mac
 task-mac-intel
 task-linux
 task.exe
+# VS Code user settings
+settings-vscode-user.json
+settings.json
