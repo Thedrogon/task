@@ -24,6 +24,7 @@ Commands:
   edit <id> "new name" Edit a task description
   clear                Delete all tasks
   help                 Show this help message
+  delete <id>          Remove a specific task
 
 
 Examples:
@@ -128,6 +129,25 @@ func main() {
 			return
 		}
 		fmt.Println("Tasks marked as done")
+	
+	case "delete":
+		if len(os.Args) < 3 {
+            fmt.Println("Usage: task delete <id>")
+            return
+        }
+
+        taskNum, err := strconv.Atoi(os.Args[2])
+        if err != nil {
+            fmt.Println("❌ Error: Invalid task number")
+            return
+        }
+
+        if err := task.DeleteTask(taskNum); err != nil {
+            fmt.Printf("❌ Error: %v\n", err)
+            return
+        }
+
+        fmt.Printf("✅ Task #%d deleted successfully\n", taskNum)
 
 	default:
 		fmt.Println("Unknown command:", os.Args[1])
