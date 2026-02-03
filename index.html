@@ -408,8 +408,8 @@
       .installation-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        margin-bottom: 32px;
+        gap: 12px;
+        margin-bottom: 0;
         max-width: 900px;
         margin-left: auto;
         margin-right: auto;
@@ -419,12 +419,12 @@
         background: var(--terminal-bg);
         border: 1px solid var(--border);
         border-radius: 6px;
-        padding: 20px;
+        padding: 2px;
         transition: all 0.3s ease;
-        aspect-ratio: 1 / 1;
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        min-height: 150px;
       }
 
       .install-card:hover {
@@ -435,19 +435,21 @@
       .install-card h3 {
         font-size: 0.95rem;
         color: var(--accent-bright);
-        margin-bottom: 12px;
+        margin-bottom: 2px;
         font-weight: 700;
       }
 
       .install-card pre {
         background: var(--bg);
-        padding: 10px;
+        padding: 2px;
         border-radius: 4px;
         overflow-x: auto;
-        font-size: 0.7rem;
-        line-height: 1.4;
+        font-size: 0.72rem;
+        line-height: 1.2;
         border: 1px solid var(--border);
         flex: 1;
+        margin: 0;
+      }
       }
 
       .install-card code {
