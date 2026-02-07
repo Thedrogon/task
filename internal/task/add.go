@@ -1,16 +1,8 @@
 package task
 
-import (
-		"strings"
-	"fmt"
-	"os"
-)
+import "os"
 
-func Add(task string) error {
-		// Validate input: reject empty or whitespace-only strings
-	if strings.TrimSpace(task) == "" {
-		return fmt.Errorf("error: task description cannot be empty")
-	}
+func Add(tasks ...string) error {
 	path, err := dataFilePath()
 	if err != nil {
 		return err
@@ -23,7 +15,15 @@ func Add(task string) error {
 	}
 	defer f.Close()
 
-	_, err = f.WriteString(task + "|pending\n")
-	return err
-}
+	for _, task := range tasks {
+		if task == "" {
+			continue
+		}
+		_, err := f.WriteString(task + "|pending\n")
+		if err != nil {
+			return err
+		}
+	}
 
+	return nil
+}
