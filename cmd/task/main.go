@@ -51,16 +51,19 @@ func main() {
 
 	case "add":
 		if len(os.Args) < 3 {
-			fmt.Println("Usage: task add <task>")
+			fmt.Println("Usage: task add \"task 1\" \"task 2\" ...")
 			return
 		}
-		err := task.Add(os.Args[2])
+
+		tasks := os.Args[2:]
+
+		err := task.Add(tasks...)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
 		}
-		fmt.Println("Task added")
 
+		fmt.Printf("✅ Added %d task(s)\n", len(tasks))
 	case "list":
 		err := task.List()
 		if err != nil {
@@ -75,7 +78,6 @@ func main() {
 		}
 		fmt.Println("All tasks deleted")
 
-		
 	case "edit":
 		if len(os.Args) < 4 {
 			fmt.Println("Usage: task edit <number> \"<new description>\"")
@@ -104,7 +106,6 @@ func main() {
 
 		fmt.Printf("✅ Task #%d updated successfully\n", taskNum)
 
-		
 	case "done":
 		if len(os.Args) < 3 {
 			fmt.Println("Usage: task done <id | all> [<id> ...]")
@@ -129,25 +130,25 @@ func main() {
 			return
 		}
 		fmt.Println("Tasks marked as done")
-	
+
 	case "delete":
 		if len(os.Args) < 3 {
-            fmt.Println("Usage: task delete <id>")
-            return
-        }
+			fmt.Println("Usage: task delete <id>")
+			return
+		}
 
-        taskNum, err := strconv.Atoi(os.Args[2])
-        if err != nil {
-            fmt.Println("❌ Error: Invalid task number")
-            return
-        }
+		taskNum, err := strconv.Atoi(os.Args[2])
+		if err != nil {
+			fmt.Println("❌ Error: Invalid task number")
+			return
+		}
 
-        if err := task.DeleteTask(taskNum); err != nil {
-            fmt.Printf("❌ Error: %v\n", err)
-            return
-        }
+		if err := task.DeleteTask(taskNum); err != nil {
+			fmt.Printf("❌ Error: %v\n", err)
+			return
+		}
 
-        fmt.Printf("✅ Task #%d deleted successfully\n", taskNum)
+		fmt.Printf("✅ Task #%d deleted successfully\n", taskNum)
 
 	default:
 		fmt.Println("Unknown command:", os.Args[1])

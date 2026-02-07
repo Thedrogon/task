@@ -1,10 +1,8 @@
 package task
 
-import (
-	"os"
-)
+import "os"
 
-func Add(task string) error {
+func Add(tasks ...string) error {
 	path, err := dataFilePath()
 	if err != nil {
 		return err
