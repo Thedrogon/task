@@ -55,15 +55,19 @@ func main() {
 			return
 		}
 
-		tasks := os.Args[2:]
-
-		err := task.Add(tasks...)
+		added, err := task.Add(os.Args[2:]...)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
 		}
 
-		fmt.Printf("✅ Added %d task(s)\n", len(tasks))
+		if added == 0 {
+			fmt.Println("❌ No valid tasks to add")
+			return
+		}
+
+		fmt.Printf("✅ Added %d task(s)\n", added)
+
 	case "list":
 		err := task.List()
 		if err != nil {
